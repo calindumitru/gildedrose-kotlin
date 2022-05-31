@@ -1,6 +1,53 @@
 package com.gildedrose
 
-fun Item.updateGeneric() {
+import com.gildedrose.ItemConstants.LEGENDARY_ITEM_QUALITY
+
+open class Item(var name: String, var sellIn: Int, var quality: Int) {
+    override fun toString(): String {
+        return this.name + ", " + this.sellIn + ", " + this.quality
+    }
+}
+
+typealias UpdateQuality = Item.() -> Unit
+
+class FNItem(private val item: Item, private val updateQuality: UpdateQuality) {
+    fun update() {
+        this.item.updateQuality()
+    }
+}
+
+fun Item.toNew(): FNItem {
+    return when {
+        name == "Aged Brie" -> {
+            FNItem(this, Item::updateAgedBrie)
+        }
+        name == "Sulfuras, Hand of Ragnaros" -> {
+            require(quality == LEGENDARY_ITEM_QUALITY)
+            FNItem(this, Item::updateLegendary)
+        }
+        name.contains("Backstage pass", true) -> {
+            FNItem(this, Item::updateBackstagePass)
+        }
+        name.contains("Conjured", true) -> {
+            FNItem(this, Item::updateConjured)
+        }
+        else -> FNItem(this, Item::updateGeneric)
+    }
+}
+
+object ItemConstants {
+    const val LEGENDARY_ITEM_QUALITY = 80
+}
+
+private fun Item.increaseQuality(amount: Int = 1) {
+    quality = (quality + amount).coerceAtMost(50)
+}
+
+private fun Item.decreaseQuality(amount: Int = 1) {
+    quality = (quality - amount).coerceAtLeast(0)
+}
+
+private fun Item.updateGeneric() {
     decreaseQuality()
     sellIn--
     if (sellIn < 0) {
@@ -8,7 +55,7 @@ fun Item.updateGeneric() {
     }
 }
 
-fun Item.updateAgedBrie() {
+private fun Item.updateAgedBrie() {
     increaseQuality()
     sellIn--
     if (sellIn < 0) {
@@ -16,20 +63,12 @@ fun Item.updateAgedBrie() {
     }
 }
 
-fun Item.updateLegendaryItem() {
+private fun Item.updateLegendary() {
     sellIn--
-    quality = 80
+    quality = LEGENDARY_ITEM_QUALITY
 }
 
-fun Item.increaseQuality(amount: Int = 1) {
-    quality = (quality + amount).coerceAtMost(50)
-}
-
-fun Item.decreaseQuality(amount: Int = 1) {
-    quality = (quality - amount).coerceAtLeast(0)
-}
-
-fun Item.updateBackstagePass() {
+private fun Item.updateBackstagePass() {
     increaseQuality()
     if (sellIn <= 10) {
         increaseQuality()
@@ -43,42 +82,10 @@ fun Item.updateBackstagePass() {
     }
 }
 
-fun Item.updateConjuredItem() {
+private fun Item.updateConjured() {
     decreaseQuality(2)
     sellIn--
     if (sellIn < 0) {
         decreaseQuality(2)
-    }
-}
-
-fun Item.toNew(): FNItem {
-    return when {
-        name == "Aged Brie" -> {
-            FNItem(this, Item::updateAgedBrie)
-        }
-        name == "Sulfuras, Hand of Ragnaros" -> {
-            require(quality == 80)
-            FNItem(this, Item::updateLegendaryItem)
-        }
-        name.contains("Backstage pass") -> {
-            FNItem(this, Item::updateBackstagePass)
-        }
-        name.contains("Conjured") -> {
-            FNItem(this, Item::updateConjuredItem)
-        }
-        else -> FNItem(this, Item::updateGeneric)
-    }
-}
-
-open class Item(var name: String, var sellIn: Int, var quality: Int) {
-    override fun toString(): String {
-        return this.name + ", " + this.sellIn + ", " + this.quality
-    }
-}
-
-typealias UpdateQuality = Item.() -> Unit
-class FNItem(private val item: Item, private val updateQuality: UpdateQuality) {
-    fun update() {
-        this.item.updateQuality()
     }
 }
