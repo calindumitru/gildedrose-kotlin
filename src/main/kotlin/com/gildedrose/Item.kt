@@ -9,29 +9,28 @@ open class Item(var name: String, var sellIn: Int, var quality: Int) {
 }
 
 typealias UpdateQuality = Item.() -> Unit
-
-class FNItem(private val item: Item, private val updateQuality: UpdateQuality) {
+class SelfUpdatableItem(private val item: Item, private val updateQuality: UpdateQuality) {
     fun update() {
         this.item.updateQuality()
     }
 }
 
-fun Item.toNew(): FNItem {
+fun Item.toUpdatable(): SelfUpdatableItem {
     return when {
         name == "Aged Brie" -> {
-            FNItem(this, Item::updateAgedBrie)
+            SelfUpdatableItem(this, Item::updateAgedBrie)
         }
         name == "Sulfuras, Hand of Ragnaros" -> {
             require(quality == LEGENDARY_ITEM_QUALITY)
-            FNItem(this, Item::updateLegendary)
+            SelfUpdatableItem(this, Item::updateLegendary)
         }
         name.contains("Backstage pass", true) -> {
-            FNItem(this, Item::updateBackstagePass)
+            SelfUpdatableItem(this, Item::updateBackstagePass)
         }
         name.contains("Conjured", true) -> {
-            FNItem(this, Item::updateConjured)
+            SelfUpdatableItem(this, Item::updateConjured)
         }
-        else -> FNItem(this, Item::updateGeneric)
+        else -> SelfUpdatableItem(this, Item::updateGeneric)
     }
 }
 

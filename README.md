@@ -7,7 +7,7 @@
 
 ## Implementation details
 
-* `FNItem` acts as a wrapper for the Item class, allowing us to specify the algorithm used to calculate the items' quality.
+* `SelfUpdatableItem` acts as a wrapper for the Item class, allowing us to specify the algorithm used to calculate the items' quality.
 * I have defined the following functions which deal with the calculation of the quality for each item 'type' 
   * updateGeneric
   * updateAgedBrie
@@ -55,11 +55,11 @@ ConjuredItemTests
 
 ## Future optimizations
 
-* The item detection algorithm is quite costly at the moment. A possible improvement could be to keep a 'catalogue' of all items and their associated update function, which would reduce the computational complexity of the `toNew()` method from O(n) to O(1).
+* The item detection algorithm is quite costly at the moment. A possible improvement could be to keep a 'catalogue' of all items and their associated update function, which would reduce the computational complexity of the `toUpdatable()` method from O(n) to O(1).
   * the obvious drawback of this alternative is that we would need to keep the catalogue updated with every new item which is unfeasible, especially in the case of 'Backstage passes'
 ```kotlin
 // instead of:
-fun Item.toNew(): FNItem {
+fun Item.toUpdatable(): FNItem {
     return when {
         name == "Aged Brie" -> {
             FNItem(this, Item::updateAgedBrie)
@@ -85,7 +85,7 @@ class FNItem(private val item: Item, private val updateQuality: UpdateQuality) {
     }
 }
 
-fun Item.toNew(): FNItem {
+fun Item.toUpdatable(): FNItem {
     return FNItem(this, updateQuality = FNItem.catalogue[this.name] ?: Item::updateGeneric)
 }
 ```

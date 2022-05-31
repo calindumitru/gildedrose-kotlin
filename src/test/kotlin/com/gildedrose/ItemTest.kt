@@ -16,7 +16,7 @@ internal class ItemTest {
     fun `item quality should not be negative`(itemName: String) {
         val item = Item(itemName, 1, 0)
 
-        item.toNew().update()
+        item.toUpdatable().update()
 
         Assertions.assertThat(item.quality).isEqualTo(0)
     }
@@ -26,9 +26,9 @@ internal class ItemTest {
     fun `item quality should not surpass 50`(itemName: String) {
         val item = Item(itemName, 100, 0)
 
-        val toNew = item.toNew()
+        val updatableItem = item.toUpdatable()
         repeat(50) {
-            toNew.update()
+            updatableItem.update()
         }
 
         Assertions.assertThat(item.quality).isLessThanOrEqualTo(50)
@@ -38,7 +38,7 @@ internal class ItemTest {
     fun `Aged Brie item quality should increase`() {
         val item = Item("Aged Brie", 1, 0)
 
-        item.toNew().update()
+        item.toUpdatable().update()
 
         Assertions.assertThat(item.quality).isEqualTo(1)
     }
@@ -48,7 +48,7 @@ internal class ItemTest {
     fun `when updating, sell-in should decrease by 1`(itemName: String) {
         val item = Item(itemName, 1, 80)
 
-        item.toNew().update()
+        item.toUpdatable().update()
 
         Assertions.assertThat(item.sellIn).isEqualTo(0)
     }
@@ -60,7 +60,7 @@ internal class ItemTest {
         fun `before surpassing the sell by date, generic item quality should decrease by 1`() {
             val item = Item("generic item", 1, 5)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(4)
         }
@@ -69,7 +69,7 @@ internal class ItemTest {
         fun `once the sell by date has passed, generic item quality should decrease by 2`() {
             val item = Item("generic item", 0, 5)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(3)
         }
@@ -82,14 +82,14 @@ internal class ItemTest {
         fun `Sulfuras item quality should not change`() {
             val item = Item("Sulfuras, Hand of Ragnaros", 1, 80)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(80)
         }
 
         @Test
         fun `creating Sulfuras with item quality other than 80 should throw an error`() {
-            assertThrows<IllegalArgumentException> { Item("Sulfuras, Hand of Ragnaros", 1, 0).toNew() }
+            assertThrows<IllegalArgumentException> { Item("Sulfuras, Hand of Ragnaros", 1, 0).toUpdatable() }
         }
     }
 
@@ -100,7 +100,7 @@ internal class ItemTest {
         fun `before surpassing the sell by date, generic item quality should decrease by 2`() {
             val item = Item("conjured item", 1, 5)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(3)
         }
@@ -109,7 +109,7 @@ internal class ItemTest {
         fun `once the sell by date has passed, generic item quality should decrease by 4`() {
             val item = Item("conjured item", 0, 5)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(1)
         }
@@ -122,7 +122,7 @@ internal class ItemTest {
         fun `when there are more than 10 days before concert, backstage pass item quality should increase by 1`() {
             val item = Item("Backstage passes to a TAFKAL80ETC concert", 11, 0)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(1)
         }
@@ -131,7 +131,7 @@ internal class ItemTest {
         fun `when there are 10 days or less before concert, backstage pass item quality should increase by 2`() {
             val item = Item("Backstage passes to a TAFKAL80ETC concert", 10, 0)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(2)
         }
@@ -140,7 +140,7 @@ internal class ItemTest {
         fun `when there are 5 days or less before concert, backstage pass item quality should increase by 3`() {
             val item = Item("Backstage passes to a TAFKAL80ETC concert", 5, 0)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(3)
         }
@@ -149,7 +149,7 @@ internal class ItemTest {
         fun `after concert, backstage pass item quality should drop to 0`() {
             val item = Item("Backstage passes to a TAFKAL80ETC concert", 0, 10)
 
-            item.toNew().update()
+            item.toUpdatable().update()
 
             Assertions.assertThat(item.quality).isEqualTo(0)
         }
